@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konzept C — Kompass | Versicherungsagentur Viersen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12181c;
+    --ink-2: #1b2328;
+    --paper: #f4f2ed;
+    --paper-line: #ddd8cc;
+    --brass: #b08d57;
+    --brass-soft: rgba(176, 141, 87, 0.14);
+    --muted: #6b7076;
+    --max: 1180px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Public Sans", sans-serif; background: var(--ink); color: var(--paper); line-height: 1.6; }
+  .serif { font-family: "Newsreader", serif; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 32px; }
+  .rule { border: none; border-top: 1px solid rgba(244,242,237,0.14); }
+
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--brass); font-weight: 600; }
+
+  /* Nav */
+  .nav { padding: 30px 0; border-bottom: 1px solid rgba(244,242,237,0.1); }
+  .nav .wrap { display: flex; justify-content: space-between; align-items: center; }
+  .brand { font-family: "Newsreader", serif; font-size: 1.3rem; font-style: italic; }
+  .nav-links { display: flex; gap: 36px; font-size: 0.85rem; letter-spacing: 0.03em; color: rgba(244,242,237,0.65); }
+  .nav-links a:hover { color: var(--paper); }
+  .nav .cta { border: 1px solid var(--brass); color: var(--brass); padding: 10px 22px; font-size: 0.82rem; letter-spacing: 0.04em; }
+  .nav .cta:hover { background: var(--brass); color: var(--ink); }
+
+  /* Hero */
+  .hero { padding: 110px 0 90px; }
+  .hero .wrap { display: grid; grid-template-columns: 0.6fr 1fr; gap: 60px; }
+  .hero-index { border-right: 1px solid rgba(244,242,237,0.14); padding-right: 40px; }
+  .hero-index .n { font-family: "Newsreader", serif; font-style: italic; font-size: 5rem; color: var(--brass); line-height: 1; }
+  .hero-index p { color: rgba(244,242,237,0.5); font-size: 0.85rem; margin-top: 18px; max-width: 22ch; }
+  .hero h1 { font-family: "Newsreader", serif; font-weight: 500; font-size: clamp(2.4rem, 4.6vw, 4rem); line-height: 1.14; }
+  .hero h1 em { color: var(--brass); font-style: italic; }
+  .hero .lead { margin-top: 26px; color: rgba(244,242,237,0.65); max-width: 56ch; font-size: 1.05rem; }
+  .hero-actions { margin-top: 40px; display: flex; gap: 18px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; font-size: 0.88rem; letter-spacing: 0.03em; cursor: pointer; transition: all 0.2s ease; }
+  .btn-solid { background: var(--brass); color: var(--ink); font-weight: 600; }
+  .btn-solid:hover { background: #c39d68; }
+  .btn-outline { border: 1px solid rgba(244,242,237,0.35); color: var(--paper); }
+  .btn-outline:hover { border-color: var(--paper); }
+
+  .stat-row { display: flex; gap: 56px; margin-top: 56px; flex-wrap: wrap; }
+  .stat-row div .n { font-family: "Newsreader", serif; font-style: italic; font-size: 1.9rem; color: var(--brass); }
+  .stat-row div .l { font-size: 0.8rem; color: rgba(244,242,237,0.5); margin-top: 4px; }
+
+  /* Services — editorial list, not cards */
+  section.pad { padding: 90px 0; }
+  .pad-light { background: var(--paper); color: var(--ink); }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 50px; flex-wrap: wrap; border-bottom: 1px solid var(--paper-line); padding-bottom: 28px; }
+  .pad:not(.pad-light) .section-head { border-color: rgba(244,242,237,0.14); }
+  .section-head h2 { font-family: "Newsreader", serif; font-weight: 500; font-size: clamp(1.9rem, 3.2vw, 2.7rem); }
+  .section-head p { color: var(--muted); max-width: 40ch; }
+  .pad:not(.pad-light) .section-head p { color: rgba(244,242,237,0.55); }
+
+  .service-list { display: flex; flex-direction: column; }
+  .service-row {
+    display: grid; grid-template-columns: 60px 1fr 1.4fr auto;
+    gap: 28px; align-items: center; padding: 26px 0;
+    border-bottom: 1px solid var(--paper-line);
+  }
+  .service-row .num { font-family: "Newsreader", serif; font-style: italic; color: var(--brass); font-size: 1.1rem; }
+  .service-row h3 { font-size: 1.1rem; font-weight: 600; }
+  .service-row p { color: var(--muted); font-size: 0.92rem; }
+  .service-row .arrow { color: var(--brass); font-size: 1.1rem; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease; }
+  .service-row:hover .arrow { opacity: 1; transform: translateX(4px); }
+  .service-row:hover { background: var(--brass-soft); }
+
+  /* Quote */
+  .quote-band { text-align: center; padding: 110px 0; }
+  .quote-band blockquote { font-family: "Newsreader", serif; font-style: italic; font-size: clamp(1.5rem, 3vw, 2.3rem); max-width: 22ch; margin: 0 auto; line-height: 1.4; }
+  .quote-band cite { display: block; margin-top: 28px; font-style: normal; color: rgba(244,242,237,0.5); font-size: 0.85rem; letter-spacing: 0.04em; }
+
+  /* CTA */
+  .cta-band { text-align: center; }
+  .cta-band h2 { font-family: "Newsreader", serif; font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); }
+  .cta-band p { color: var(--muted); margin: 18px 0 34px; }
+
+  footer { background: var(--ink); color: rgba(244,242,237,0.45); padding: 36px 0; font-size: 0.82rem; border-top: 1px solid rgba(244,242,237,0.1); }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 860px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero-index { border-right: none; border-bottom: 1px solid rgba(244,242,237,0.14); padding-right: 0; padding-bottom: 28px; }
+    .nav-links { display: none; }
+    .service-row { grid-template-columns: 40px 1fr; }
+    .service-row p, .service-row .arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand">Vertrauen Viersen</div>
+    <div class="nav-links">
+      <a href="#leistungen">Leistungen</a>
+      <a href="#philosophie">Philosophie</a>
+      <a href="#kontakt">Kontakt</a>
+    </div>
+    <a href="#kontakt" class="cta">Termin anfragen</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-index">
+      <div class="n">01</div>
+      <p>Unabhängige Versicherungsberatung, ansässig in Viersen seit über 15 Jahren.</p>
+    </div>
+    <div>
+      <span class="eyebrow">Versicherungsagentur Viersen</span>
+      <h1 style="margin-top:16px;">Weitsicht ist keine <em>Gebühr</em>, sondern unsere Aufgabe.</h1>
+      <p class="lead">Wir beraten dort, wo Entscheidungen Bestand haben müssen: Berufsunfähigkeit, Altersvorsorge, Vermögensschutz. Unabhängig geprüft, diskret begleitet.</p>
+      <div class="hero-actions">
+        <a href="#kontakt" class="btn btn-solid">Beratungstermin anfragen</a>
+        <a href="#leistungen" class="btn btn-outline">Leistungen im Überblick</a>
+      </div>
+      <div class="stat-row">
+        <div><div class="n">15+</div><div class="l">Jahre am Standort</div></div>
+        <div><div class="n">1.200+</div><div class="l">betreute Mandate</div></div>
+        <div><div class="n">30+</div><div class="l">Partnergesellschaften</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="pad" id="leistungen">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Beratungsfelder</h2>
+      <p>Ausgewählt, nicht vollständig — die Bereiche, in denen Beratung den größten Unterschied macht.</p>
+    </div>
+    <div class="service-list">
+      <div class="service-row"><span class="num">01</span><h3>Berufsunfähigkeit</h3><p>Absicherung der Arbeitskraft als zentrales Element der Vermögensplanung.</p><span class="arrow">→</span></div>
+      <div class="service-row"><span class="num">02</span><h3>Altersvorsorge</h3><p>Private und betriebliche Vorsorge, auf Ihre Lebensplanung abgestimmt.</p><span class="arrow">→</span></div>
+      <div class="service-row"><span class="num">03</span><h3>Vermögensschutz</h3><p>Haftpflicht, Rechtsschutz und Hausrat als Fundament der Absicherung.</p><span class="arrow">→</span></div>
+      <div class="service-row"><span class="num">04</span><h3>Mobilität</h3><p>Kfz-Versicherung für Privat- und Geschäftsfahrzeuge.</p><span class="arrow">→</span></div>
+      <div class="service-row"><span class="num">05</span><h3>Unternehmen</h3><p>Gewerbeversicherung für Selbstständige und Betriebe.</p><span class="arrow">→</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="quote-band" id="philosophie">
+  <div class="wrap">
+    <blockquote>„Gute Beratung erkennt man daran, was sie nicht verkauft.“</blockquote>
+    <cite>— Unser Beratungsgrundsatz seit 2011</cite>
+  </div>
+</section>
+
+<section class="pad cta-band" id="kontakt">
+  <div class="wrap">
+    <h2>Ein Gespräch, bevor eine Entscheidung fällt.</h2>
+    <p>Unverbindlich. Vertraulich. Vor Ort in Viersen.</p>
+    <a href="tel:+4921621234560" class="btn btn-solid">02162 / 123 456</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Vertrauen Viersen Versicherungsagentur</span>
+    <span>Konzept C — „Kompass“</span>
+  </div>
+</footer>
+
+</body>
+</html>

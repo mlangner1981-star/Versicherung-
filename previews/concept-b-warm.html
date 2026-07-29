@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konzept B — Nachbarschaft | Versicherungsagentur Viersen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brown-deep: #5b3a2e;
+    --brown-darker: #422a21;
+    --sand: #e8dcc8;
+    --sand-soft: #f1e8d8;
+    --rust: #c1502b;
+    --sage: #6b7f5b;
+    --ink: #2b211a;
+    --muted: #766152;
+    --max: 1160px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Karla", sans-serif;
+    background: var(--sand);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .serif { font-family: "Fraunces", serif; font-optical-sizing: auto; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+
+  .squiggle { position: relative; white-space: nowrap; }
+  .squiggle::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: -6px; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10' viewBox='0 0 120 10'%3E%3Cpath d='M0 5 Q10 0 20 5 T40 5 T60 5 T80 5 T100 5 T120 5' stroke='%23c1502b' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x;
+    background-size: 60px 10px;
+  }
+
+  /* Nav */
+  .nav { padding: 26px 0; }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: "Fraunces", serif; font-weight: 600; font-size: 1.3rem; color: var(--brown-darker); }
+  .nav-links { display: flex; gap: 30px; }
+  .nav-links a { font-size: 0.94rem; font-weight: 600; color: var(--brown-darker); }
+  .nav .cta {
+    background: var(--rust); color: #fff; padding: 12px 24px; border-radius: 100px;
+    font-weight: 700; font-size: 0.9rem;
+  }
+
+  /* Hero */
+  .hero { padding: 40px 0 100px; position: relative; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; position: relative; }
+  .hero-blob {
+    position: absolute; width: 480px; height: 480px; border-radius: 48% 52% 60% 40% / 45% 55% 45% 55%;
+    background: var(--brown-deep); opacity: 0.08; top: -140px; right: -160px; z-index: 0;
+  }
+  .kicker { display: inline-block; background: var(--sage); color: #fff; padding: 7px 16px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; margin-bottom: 26px; }
+  .hero h1 { font-size: clamp(2.4rem, 4.6vw, 3.7rem); font-weight: 500; color: var(--brown-darker); line-height: 1.12; }
+  .hero .lead { margin-top: 22px; font-size: 1.12rem; color: var(--muted); max-width: 48ch; }
+  .hero-actions { display: flex; gap: 16px; margin-top: 34px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 15px 28px; border-radius: 100px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s ease, background 0.2s ease; }
+  .btn-solid { background: var(--rust); color: #fff; }
+  .btn-solid:hover { background: #a8431f; transform: translateY(-2px); }
+  .btn-outline { border-color: var(--brown-darker); color: var(--brown-darker); }
+  .btn-outline:hover { background: var(--brown-darker); color: #fff; }
+
+  .signature-card {
+    background: var(--sand-soft);
+    border-radius: 28px;
+    padding: 36px;
+    position: relative;
+    box-shadow: 0 20px 45px rgba(66, 42, 33, 0.12);
+  }
+  .signature-card .quote { font-family: "Fraunces", serif; font-size: 1.3rem; font-style: italic; color: var(--brown-darker); line-height: 1.4; }
+  .signature-card .who { margin-top: 20px; display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--sage); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: "Fraunces", serif; }
+  .who .name { font-weight: 700; font-size: 0.95rem; }
+  .who .role { font-size: 0.82rem; color: var(--muted); }
+
+  /* Leistungen */
+  section.pad { padding: 90px 0; }
+  .section-head { text-align: center; max-width: 620px; margin: 0 auto 56px; }
+  .section-head .eyebrow { color: var(--rust); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .section-head h2 { font-size: clamp(1.9rem, 3.2vw, 2.6rem); font-weight: 500; color: var(--brown-darker); margin-top: 10px; }
+  .section-head p { color: var(--muted); margin-top: 14px; }
+
+  .badge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 26px; }
+  .badge-card { background: var(--sand-soft); border-radius: 22px; padding: 30px 26px; transition: transform 0.25s ease; }
+  .badge-card:hover { transform: translateY(-6px) rotate(-0.5deg); }
+  .badge {
+    width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--rust); color: #fff; margin-bottom: 18px; font-family: "Fraunces", serif; font-size: 1.2rem; font-weight: 600;
+  }
+  .badge-card:nth-child(2n) .badge { background: var(--sage); }
+  .badge-card:nth-child(3n) .badge { background: var(--brown-deep); }
+  .badge-card h3 { font-family: "Fraunces", serif; font-weight: 600; font-size: 1.15rem; margin-bottom: 8px; }
+  .badge-card p { color: var(--muted); font-size: 0.93rem; }
+
+  /* Promise band */
+  .promise { background: var(--brown-deep); color: var(--sand-soft); }
+  .promise .wrap { padding: 90px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+  .promise h2 { font-family: "Fraunces", serif; font-weight: 500; font-size: clamp(1.9rem, 3.2vw, 2.6rem); }
+  .promise-list div { padding: 18px 0; border-bottom: 1px solid rgba(241,232,216,0.18); display: flex; gap: 14px; }
+  .promise-list div:last-child { border-bottom: none; }
+  .promise-list .mark { color: var(--sand); font-family: "Fraunces", serif; font-weight: 600; }
+
+  /* CTA */
+  .cta { text-align: center; padding: 100px 0; }
+  .cta h2 { font-family: "Fraunces", serif; font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); color: var(--brown-darker); }
+  .cta p { color: var(--muted); margin: 18px 0 34px; }
+
+  footer { background: var(--brown-darker); color: rgba(241,232,216,0.6); padding: 36px 0; font-size: 0.85rem; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .promise .wrap { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .hero-blob { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand">Vertrauen Viersen</div>
+    <div class="nav-links">
+      <a href="#leistungen">Leistungen</a>
+      <a href="#versprechen">Versprechen</a>
+      <a href="#kontakt">Kontakt</a>
+    </div>
+    <a href="#kontakt" class="cta">Termin vereinbaren</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-blob"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">Ihre Versicherungsagentur in Viersen</span>
+      <h1>Absicherung, die sich anfühlt wie ein <span class="squiggle serif" style="font-style:italic;">gutes Gespräch</span>.</h1>
+      <p class="lead">Kein Vertreter, der Ihnen etwas verkaufen will — sondern jemand aus Viersen, der mit Ihnen rechnet, bevor er etwas empfiehlt.</p>
+      <div class="hero-actions">
+        <a href="#kontakt" class="btn btn-solid">Kostenlos beraten lassen</a>
+        <a href="#leistungen" class="btn btn-outline">Was wir absichern</a>
+      </div>
+    </div>
+    <div class="signature-card">
+      <p class="quote">„Ich erkläre jeden Vertrag so, dass Sie ihn auch ohne mich verstehen würden.“</p>
+      <div class="who">
+        <div class="avatar">MV</div>
+        <div>
+          <div class="name">Ihr Ansprechpartner vor Ort</div>
+          <div class="role">Versicherungsmakler · Viersen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="pad" id="leistungen">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Leistungen</div>
+      <h2>Worum wir uns für Sie kümmern</h2>
+      <p>Sechs Bereiche, ein Ansprechpartner — statt sechs verschiedener Hotlines.</p>
+    </div>
+    <div class="badge-grid">
+      <div class="badge-card"><div class="badge">Kfz</div><h3>Kfz-Versicherung</h3><p>Haftpflicht, Teil- und Vollkasko für PKW, Motorrad, Wohnmobil.</p></div>
+      <div class="badge-card"><div class="badge">Zu</div><h3>Haftpflicht & Hausrat</h3><p>Schutz für Ihr Zuhause und im Alltag.</p></div>
+      <div class="badge-card"><div class="badge">BU</div><h3>Berufsunfähigkeit</h3><p>Absicherung Ihrer Arbeitskraft — Ihr wichtigstes Kapital.</p></div>
+      <div class="badge-card"><div class="badge">AV</div><h3>Altersvorsorge</h3><p>Privat und betrieblich, verständlich erklärt.</p></div>
+      <div class="badge-card"><div class="badge">RS</div><h3>Rechtsschutz</h3><p>Rückendeckung im Beruf, Verkehr und Privatleben.</p></div>
+      <div class="badge-card"><div class="badge">Ge</div><h3>Gewerbe</h3><p>Schutz für Selbstständige und kleine Betriebe.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="promise" id="versprechen">
+  <div class="wrap">
+    <div>
+      <h2>Unser Versprechen an Viersen</h2>
+    </div>
+    <div class="promise-list">
+      <div><span class="mark">01</span><span>Erstberatung kostenlos, ohne Kaufdruck</span></div>
+      <div><span class="mark">02</span><span>Antwort innerhalb eines Werktags</span></div>
+      <div><span class="mark">03</span><span>Jährlicher Vertragscheck ohne Nachfrage</span></div>
+      <div><span class="mark">04</span><span>Persönlich erreichbar, kein Callcenter</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="kontakt">
+  <div class="wrap">
+    <h2 class="squiggle" style="display:inline-block;">Lassen Sie uns reden.</h2>
+    <p>Unverbindlich, kostenlos, auf Augenhöhe.</p>
+    <a href="tel:+4921621234560" class="btn btn-solid">02162 / 123 456</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Vertrauen Viersen Versicherungsagentur</span>
+    <span>Konzept B — „Nachbarschaft“</span>
+  </div>
+</footer>
+
+</body>
+</html>
