@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konzept C+ — Kompass Interaktiv | Versicherungsagentur Viersen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12181c;
+    --ink-2: #1b2328;
+    --paper: #f4f2ed;
+    --paper-line: #ddd8cc;
+    --brass: #b08d57;
+    --brass-bright: #d8b378;
+    --brass-soft: rgba(176, 141, 87, 0.14);
+    --muted: #6b7076;
+    --max: 1180px;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Public Sans", sans-serif; background: var(--ink); color: var(--paper); line-height: 1.6; cursor: none; }
+  .serif { font-family: "Newsreader", serif; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 32px; }
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--brass); font-weight: 600; }
+
+  @media (hover: none), (pointer: coarse) {
+    body { cursor: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body { cursor: auto; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* Custom cursor */
+  .cursor-dot, .cursor-ring {
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+    border-radius: 50%; transform: translate(-50%, -50%);
+    opacity: 0;
+  }
+  .cursor-dot.is-ready, .cursor-ring.is-ready { opacity: 1; }
+  .cursor-dot { width: 6px; height: 6px; background: var(--brass-bright); }
+  .cursor-ring {
+    width: 36px; height: 36px; border: 1px solid rgba(216, 179, 120, 0.5);
+    transition: width 0.25s var(--ease), height 0.25s var(--ease), border-color 0.25s ease, background 0.25s ease;
+  }
+  .cursor-ring.is-active { width: 60px; height: 60px; background: rgba(216,179,120,0.08); border-color: var(--brass-bright); }
+  @media (hover: none), (pointer: coarse) {
+    .cursor-dot, .cursor-ring { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor-dot, .cursor-ring { display: none; }
+  }
+
+  /* Scroll progress */
+  .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--brass-bright); z-index: 998; width: 0%; }
+
+  /* Nav */
+  .nav { position: sticky; top: 0; z-index: 60; padding: 26px 0; border-bottom: 1px solid rgba(244,242,237,0.1); background: rgba(18,24,28,0.86); backdrop-filter: blur(10px); }
+  .nav .wrap { display: flex; justify-content: space-between; align-items: center; }
+  .brand { font-family: "Newsreader", serif; font-size: 1.3rem; font-style: italic; }
+  .nav-links { display: flex; gap: 36px; font-size: 0.85rem; letter-spacing: 0.03em; color: rgba(244,242,237,0.65); }
+  .nav-links a { position: relative; padding: 4px 0; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 1px; background: var(--brass-bright); transition: width 0.25s ease; }
+  .nav-links a:hover { color: var(--paper); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav .cta { border: 1px solid var(--brass); color: var(--brass); padding: 10px 22px; font-size: 0.82rem; letter-spacing: 0.04em; }
+  .nav .cta:hover { background: var(--brass); color: var(--ink); }
+
+  /* Hero with canvas constellation */
+  .hero { position: relative; padding: 110px 0 90px; overflow: hidden; }
+  #constellation { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.85; }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: 0.6fr 1fr; gap: 60px; }
+  .hero-index { border-right: 1px solid rgba(244,242,237,0.14); padding-right: 40px; }
+  .hero-index .n { font-family: "Newsreader", serif; font-style: italic; font-size: 5rem; color: var(--brass); line-height: 1; font-variant-numeric: tabular-nums; }
+  .hero-index p { color: rgba(244,242,237,0.5); font-size: 0.85rem; margin-top: 18px; max-width: 22ch; }
+  .hero h1 { font-family: "Newsreader", serif; font-weight: 500; font-size: clamp(2.4rem, 4.6vw, 4rem); line-height: 1.14; }
+  .hero h1 em { color: var(--brass); font-style: italic; }
+  .hero .lead { margin-top: 26px; color: rgba(244,242,237,0.65); max-width: 56ch; font-size: 1.05rem; }
+  .hero-actions { margin-top: 40px; display: flex; gap: 18px; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; font-size: 0.88rem;
+    letter-spacing: 0.03em; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    will-change: transform;
+  }
+  .btn-solid { background: var(--brass); color: var(--ink); font-weight: 600; }
+  .btn-solid:hover { background: var(--brass-bright); }
+  .btn-outline { border: 1px solid rgba(244,242,237,0.35); color: var(--paper); }
+  .btn-outline:hover { border-color: var(--paper); }
+
+  .stat-row { display: flex; gap: 56px; margin-top: 56px; flex-wrap: wrap; }
+  .stat-row div .n { font-family: "Newsreader", serif; font-style: italic; font-size: 1.9rem; color: var(--brass); font-variant-numeric: tabular-nums; }
+  .stat-row div .l { font-size: 0.8rem; color: rgba(244,242,237,0.5); margin-top: 4px; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+  section.pad { padding: 90px 0; }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 50px; flex-wrap: wrap; border-bottom: 1px solid rgba(244,242,237,0.14); padding-bottom: 28px; }
+  .section-head h2 { font-family: "Newsreader", serif; font-weight: 500; font-size: clamp(1.9rem, 3.2vw, 2.7rem); }
+  .section-head p { color: rgba(244,242,237,0.55); max-width: 40ch; }
+
+  .service-list { display: flex; flex-direction: column; }
+  .service-row {
+    display: grid; grid-template-columns: 60px 1fr 1.4fr auto;
+    gap: 28px; align-items: center; padding: 26px 0;
+    border-bottom: 1px solid rgba(244,242,237,0.14);
+    position: relative;
+  }
+  .service-row .num { font-family: "Newsreader", serif; font-style: italic; color: var(--brass); font-size: 1.1rem; }
+  .service-row h3 { font-size: 1.1rem; font-weight: 600; }
+  .service-row p { color: rgba(244,242,237,0.55); font-size: 0.92rem; }
+  .service-row .arrow { color: var(--brass); font-size: 1.1rem; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease; }
+  .service-row:hover .arrow { opacity: 1; transform: translateX(4px); }
+  .service-row:hover { background: var(--brass-soft); }
+  .service-row .spark { position: absolute; left: 0; top: 0; height: 100%; width: 2px; background: var(--brass-bright); transform: scaleY(0); transition: transform 0.3s var(--ease); }
+  .service-row:hover .spark { transform: scaleY(1); }
+
+  /* Kompass-Check quiz */
+  .quiz-section { background: var(--paper); color: var(--ink); }
+  .quiz-card {
+    max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid var(--paper-line);
+    border-radius: 4px; padding: 48px; position: relative; overflow: hidden;
+  }
+  .quiz-dots { display: flex; gap: 8px; margin-bottom: 32px; }
+  .quiz-dots span { width: 28px; height: 2px; background: var(--paper-line); transition: background 0.3s ease; }
+  .quiz-dots span.done { background: var(--brass); }
+  .quiz-step { display: none; }
+  .quiz-step.active { display: block; animation: fadeUp 0.45s var(--ease); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .quiz-card .eyebrow { color: var(--brass); }
+  .quiz-card h3 { font-family: "Newsreader", serif; font-weight: 500; font-size: 1.6rem; margin: 10px 0 28px; }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .quiz-option {
+    border: 1px solid var(--paper-line); padding: 18px 20px; text-align: left; background: none;
+    font-family: inherit; font-size: 0.95rem; color: var(--ink); cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  }
+  .quiz-option:hover { border-color: var(--brass); background: var(--brass-soft); transform: translateY(-2px); }
+  .quiz-result .eyebrow { color: var(--brass); }
+  .quiz-result h3 { font-family: "Newsreader", serif; font-weight: 500; font-size: 1.7rem; margin: 10px 0 16px; }
+  .quiz-result p { color: var(--muted); margin-bottom: 26px; }
+  .quiz-restart { background: none; border: none; color: var(--muted); font-size: 0.85rem; text-decoration: underline; cursor: pointer; margin-top: 18px; }
+
+  /* Quote */
+  .quote-band { text-align: center; padding: 110px 0; }
+  .quote-band blockquote { font-family: "Newsreader", serif; font-style: italic; font-size: clamp(1.5rem, 3vw, 2.3rem); max-width: 22ch; margin: 0 auto; line-height: 1.4; }
+  .quote-band cite { display: block; margin-top: 28px; font-style: normal; color: rgba(244,242,237,0.5); font-size: 0.85rem; letter-spacing: 0.04em; }
+
+  .cta-band { text-align: center; }
+  .cta-band h2 { font-family: "Newsreader", serif; font-weight: 500; font-size: clamp(2rem, 4vw, 3rem); }
+  .cta-band p { color: var(--muted); margin: 18px 0 34px; }
+
+  footer { background: var(--ink); color: rgba(244,242,237,0.45); padding: 36px 0; font-size: 0.82rem; border-top: 1px solid rgba(244,242,237,0.1); }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 860px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero-index { border-right: none; border-bottom: 1px solid rgba(244,242,237,0.14); padding-right: 0; padding-bottom: 28px; }
+    .nav-links { display: none; }
+    .service-row { grid-template-columns: 40px 1fr; }
+    .service-row p, .service-row .arrow { display: none; }
+    .quiz-options { grid-template-columns: 1fr; }
+    .quiz-card { padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+<div class="progress-bar"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand">Vertrauen Viersen</div>
+    <div class="nav-links">
+      <a href="#leistungen">Leistungen</a>
+      <a href="#kompass-check">Kompass-Check</a>
+      <a href="#philosophie">Philosophie</a>
+      <a href="#kontakt">Kontakt</a>
+    </div>
+    <a href="#kontakt" class="cta magnetic">Termin anfragen</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="constellation"></canvas>
+  <div class="wrap">
+    <div class="hero-index">
+      <div class="n" data-count-to="1">01</div>
+      <p>Unabhängige Versicherungsberatung, ansässig in Viersen seit über 15 Jahren.</p>
+    </div>
+    <div>
+      <span class="eyebrow">Versicherungsagentur Viersen</span>
+      <h1 style="margin-top:16px;">Weitsicht ist keine <em>Gebühr</em>, sondern unsere Aufgabe.</h1>
+      <p class="lead">Wir beraten dort, wo Entscheidungen Bestand haben müssen: Berufsunfähigkeit, Altersvorsorge, Vermögensschutz. Unabhängig geprüft, diskret begleitet.</p>
+      <div class="hero-actions">
+        <a href="#kompass-check" class="btn btn-solid magnetic">Kompass-Check starten</a>
+        <a href="#leistungen" class="btn btn-outline magnetic">Leistungen im Überblick</a>
+      </div>
+      <div class="stat-row">
+        <div><div class="n" data-count-to="15" data-suffix="+">0</div><div class="l">Jahre am Standort</div></div>
+        <div><div class="n" data-count-to="1200" data-suffix="+">0</div><div class="l">betreute Mandate</div></div>
+        <div><div class="n" data-count-to="30" data-suffix="+">0</div><div class="l">Partnergesellschaften</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="pad" id="leistungen">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Beratungsfelder</h2>
+      <p>Ausgewählt, nicht vollständig — die Bereiche, in denen Beratung den größten Unterschied macht.</p>
+    </div>
+    <div class="service-list">
+      <div class="service-row reveal"><span class="spark"></span><span class="num">01</span><h3>Berufsunfähigkeit</h3><p>Absicherung der Arbeitskraft als zentrales Element der Vermögensplanung.</p><span class="arrow">→</span></div>
+      <div class="service-row reveal"><span class="spark"></span><span class="num">02</span><h3>Altersvorsorge</h3><p>Private und betriebliche Vorsorge, auf Ihre Lebensplanung abgestimmt.</p><span class="arrow">→</span></div>
+      <div class="service-row reveal"><span class="spark"></span><span class="num">03</span><h3>Vermögensschutz</h3><p>Haftpflicht, Rechtsschutz und Hausrat als Fundament der Absicherung.</p><span class="arrow">→</span></div>
+      <div class="service-row reveal"><span class="spark"></span><span class="num">04</span><h3>Mobilität</h3><p>Kfz-Versicherung für Privat- und Geschäftsfahrzeuge.</p><span class="arrow">→</span></div>
+      <div class="service-row reveal"><span class="spark"></span><span class="num">05</span><h3>Unternehmen</h3><p>Gewerbeversicherung für Selbstständige und Betriebe.</p><span class="arrow">→</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="pad quiz-section" id="kompass-check">
+  <div class="wrap">
+    <div class="section-head reveal" style="border-color: var(--paper-line);">
+      <h2 style="color: var(--ink);">Der Kompass-Check</h2>
+      <p style="color: var(--muted);">Zwei Fragen, eine ehrliche Einschätzung — keine Anmeldung, keine Verpflichtung.</p>
+    </div>
+
+    <div class="quiz-card reveal">
+      <div class="quiz-dots"><span id="dot-1" class="done"></span><span id="dot-2"></span><span id="dot-3"></span></div>
+
+      <div class="quiz-step active" data-step="1">
+        <span class="eyebrow">Frage 1 / 2</span>
+        <h3>Wie ist Ihre aktuelle Situation?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option" data-value="angestellt">Angestellt</button>
+          <button class="quiz-option" data-value="selbststaendig">Selbstständig</button>
+          <button class="quiz-option" data-value="familie">Familie mit Kindern</button>
+          <button class="quiz-option" data-value="rente">Rente in Sicht</button>
+        </div>
+      </div>
+
+      <div class="quiz-step" data-step="2">
+        <span class="eyebrow">Frage 2 / 2</span>
+        <h3>Was beschäftigt Sie gerade am meisten?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option" data-value="einkommen">Mein Einkommen im Ernstfall</button>
+          <button class="quiz-option" data-value="eigentum">Mein Zuhause & Eigentum</button>
+          <button class="quiz-option" data-value="vorsorge">Meine Altersvorsorge</button>
+          <button class="quiz-option" data-value="fahrzeug">Mein Fahrzeug</button>
+        </div>
+      </div>
+
+      <div class="quiz-step quiz-result" data-step="3">
+        <span class="eyebrow">Ihre Einschätzung</span>
+        <h3 id="quiz-result-title">Empfehlung wird geladen …</h3>
+        <p id="quiz-result-text"></p>
+        <a href="#kontakt" class="btn btn-solid magnetic">Unverbindlich beraten lassen</a>
+        <br>
+        <button class="quiz-restart" id="quiz-restart">Check neu starten</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="quote-band reveal" id="philosophie">
+  <div class="wrap">
+    <blockquote>„Gute Beratung erkennt man daran, was sie nicht verkauft.“</blockquote>
+    <cite>— Unser Beratungsgrundsatz seit 2011</cite>
+  </div>
+</section>
+
+<section class="pad cta-band reveal" id="kontakt">
+  <div class="wrap">
+    <h2>Ein Gespräch, bevor eine Entscheidung fällt.</h2>
+    <p>Unverbindlich. Vertraulich. Vor Ort in Viersen.</p>
+    <a href="tel:+4921621234560" class="btn btn-solid magnetic">02162 / 123 456</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Vertrauen Viersen Versicherungsagentur</span>
+    <span>Konzept C+ — „Kompass Interaktiv“</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var isCoarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+  /* Scroll progress bar */
+  var progressBar = document.querySelector(".progress-bar");
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement;
+    var scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressBar.style.width = scrolled + "%";
+  });
+
+  /* Custom cursor */
+  if (!isCoarsePointer && !prefersReducedMotion) {
+    var dot = document.querySelector(".cursor-dot");
+    var ring = document.querySelector(".cursor-ring");
+    var ringX = 0, ringY = 0, mouseX = 0, mouseY = 0;
+
+    window.addEventListener("mousemove", function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + "px";
+      dot.style.top = mouseY + "px";
+      dot.classList.add("is-ready");
+      ring.classList.add("is-ready");
+    });
+
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      ring.style.left = ringX + "px";
+      ring.style.top = ringY + "px";
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll("a, button, .quiz-option").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { ring.classList.add("is-active"); });
+      el.addEventListener("mouseleave", function () { ring.classList.remove("is-active"); });
+    });
+  }
+
+  /* Magnetic buttons */
+  if (!isCoarsePointer && !prefersReducedMotion) {
+    document.querySelectorAll(".magnetic").forEach(function (btn) {
+      btn.addEventListener("mousemove", function (e) {
+        var rect = btn.getBoundingClientRect();
+        var relX = e.clientX - rect.left - rect.width / 2;
+        var relY = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = "translate(" + relX * 0.25 + "px, " + relY * 0.35 + "px)";
+      });
+      btn.addEventListener("mouseleave", function () {
+        btn.style.transform = "translate(0, 0)";
+      });
+    });
+  }
+
+  /* Scroll reveal */
+  var revealEls = document.querySelectorAll(".reveal");
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+    revealEls.forEach(function (el) { el.classList.add("is-visible"); });
+  } else {
+    var observer = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function (el) { observer.observe(el); });
+  }
+
+  /* Count-up stats */
+  document.querySelectorAll("[data-count-to]").forEach(function (el) {
+    var target = parseFloat(el.getAttribute("data-count-to"));
+    var suffix = el.getAttribute("data-suffix") || "";
+    if (prefersReducedMotion) {
+      el.textContent = target.toLocaleString("de-DE") + suffix;
+      return;
+    }
+    var obs = new IntersectionObserver(function (entries, o) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        o.unobserve(el);
+        var start = null;
+        var duration = 1100;
+        function step(ts) {
+          if (start === null) start = ts;
+          var progress = Math.min((ts - start) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.round(target * eased).toLocaleString("de-DE") + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.6 });
+    obs.observe(el);
+  });
+
+  /* Kompass-Check quiz */
+  var quizState = {};
+  var quizCard = document.querySelector(".quiz-card");
+  var recommendations = {
+    einkommen: {
+      title: "Berufsunfähigkeit sichert Ihr Einkommen ab.",
+      text: "Ihre Arbeitskraft ist Ihr größtes Kapital. Eine Berufsunfähigkeitsversicherung fängt den Einkommensausfall auf, wenn Sie selbst nicht mehr arbeiten können."
+    },
+    eigentum: {
+      title: "Haftpflicht & Hausrat schützen Ihr Zuhause.",
+      text: "Schadensersatzforderungen und Schäden am Hausrat können teuer werden. Eine passende Absicherung schützt Ihr Eigentum zuverlässig."
+    },
+    vorsorge: {
+      title: "Altersvorsorge lohnt sich, je früher desto mehr.",
+      text: "Private und betriebliche Vorsorge lassen sich klug kombinieren. Wir zeigen Ihnen, was zu Ihrer Lebensplanung passt."
+    },
+    fahrzeug: {
+      title: "Die richtige Kfz-Versicherung spart bares Geld.",
+      text: "Haftpflicht, Teil- oder Vollkasko — wir vergleichen Tarife für PKW, Motorrad oder Wohnmobil und finden das passende Modell."
+    }
+  };
+
+  if (quizCard) {
+    var steps = quizCard.querySelectorAll(".quiz-step");
+    var dots = quizCard.querySelectorAll(".quiz-dots span");
+
+    function showStep(n) {
+      steps.forEach(function (s) { s.classList.toggle("active", s.getAttribute("data-step") == n); });
+      dots.forEach(function (d, i) { d.classList.toggle("done", i < n); });
+    }
+
+    quizCard.querySelectorAll('.quiz-step[data-step="1"] .quiz-option').forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        quizState.situation = opt.getAttribute("data-value");
+        showStep(2);
+      });
+    });
+
+    quizCard.querySelectorAll('.quiz-step[data-step="2"] .quiz-option').forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        quizState.priority = opt.getAttribute("data-value");
+        var rec = recommendations[quizState.priority];
+        document.getElementById("quiz-result-title").textContent = rec.title;
+        document.getElementById("quiz-result-text").textContent = rec.text;
+        showStep(3);
+      });
+    });
+
+    document.getElementById("quiz-restart").addEventListener("click", function () {
+      quizState = {};
+      showStep(1);
+    });
+  }
+
+  /* Constellation canvas */
+  var canvas = document.getElementById("constellation");
+  if (canvas) {
+    var ctx = canvas.getContext("2d");
+    var hero = canvas.closest(".hero");
+    var points = [];
+    var pointerPos = { x: null, y: null };
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function resize() {
+      var rect = hero.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      var count = Math.min(60, Math.floor((rect.width * rect.height) / 22000));
+      points = [];
+      for (var i = 0; i < count; i++) {
+        points.push({
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
+          vx: (Math.random() - 0.5) * 0.18,
+          vy: (Math.random() - 0.5) * 0.18
+        });
+      }
+    }
+
+    function draw() {
+      var rect = hero.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      points.forEach(function (p) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > rect.width) p.vx *= -1;
+        if (p.y < 0 || p.y > rect.height) p.vy *= -1;
+
+        if (pointerPos.x !== null) {
+          var dx = p.x - pointerPos.x, dy = p.y - pointerPos.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            p.x += dx / dist * 0.4;
+            p.y += dy / dist * 0.4;
+          }
+        }
+      });
+
+      for (var i = 0; i < points.length; i++) {
+        for (var j = i + 1; j < points.length; j++) {
+          var dx = points[i].x - points[j].x, dy = points[i].y - points[j].y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            ctx.strokeStyle = "rgba(176, 141, 87, " + (0.14 * (1 - dist / 140)) + ")";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(points[i].x, points[i].y);
+            ctx.lineTo(points[j].x, points[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      points.forEach(function (p) {
+        ctx.fillStyle = "rgba(216, 179, 120, 0.55)";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    if (!prefersReducedMotion) {
+      resize();
+      window.addEventListener("resize", resize);
+      hero.addEventListener("mousemove", function (e) {
+        var rect = hero.getBoundingClientRect();
+        pointerPos.x = e.clientX - rect.left;
+        pointerPos.y = e.clientY - rect.top;
+      });
+      hero.addEventListener("mouseleave", function () { pointerPos.x = null; pointerPos.y = null; });
+      requestAnimationFrame(draw);
+    } else {
+      canvas.style.display = "none";
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
