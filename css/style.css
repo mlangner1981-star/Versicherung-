@@ -420,7 +420,7 @@ section.pad { padding: 88px 0; border-bottom: 1px solid var(--line); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .nav-links, .nav-cta .nav-phone { display: none; }
   .nav-toggle { display: flex; position: relative; z-index: 1000; }
 
@@ -434,7 +434,9 @@ section.pad { padding: 88px 0; border-bottom: 1px solid var(--line); }
   .nav-links li { border-bottom: 1px solid var(--line); }
   .nav-links a { display: block; padding: 16px 4px; font-size: 1.02rem; }
   .nav-links a::after { display: none; }
+}
 
+@media (max-width: 760px) {
   section.pad { padding: 64px 0; }
   .service-row { grid-template-columns: 34px 1fr; }
   .service-row p, .service-row .arrow { display: none; }
