@@ -137,7 +137,7 @@ img { max-width: 100%; display: block; }
    ========================================================================== */
 
 .site-header {
-  position: sticky; top: 0; z-index: 60;
+  position: sticky; top: 0; z-index: 1000;
   background: rgba(18, 24, 28, 0.88);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
